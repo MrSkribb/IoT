@@ -1,0 +1,5 @@
+x1 ESP8266 NodeMCU 12E
+x1 Piezo buzzer
+x5 Female to Female Wires
+
+My circuit was powered by a small powerbank which fit inside of the enclosure.

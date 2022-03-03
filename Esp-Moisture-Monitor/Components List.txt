@@ -1,0 +1,5 @@
+x1 ESP8266 NodeMCU 12E
+x1 Duinotech Soil Moisture Sensor 
+x3 Wires
+
+* I used a 9v battery as my power source so the number of wires will depend on how the ESP is powered * 
