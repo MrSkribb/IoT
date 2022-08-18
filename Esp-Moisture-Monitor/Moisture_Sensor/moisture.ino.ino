@@ -1,14 +1,16 @@
-#include <ESP8266WiFi.h> // Library needed 
+#include <ESP8266WiFi.h>
 
-const char* ssid     = "ssid";      // SSID of local network
-const char* password = "password";   // Password of network
+const char* ssid     = "";      // SSID of local network
+const char* password = "";   // Password of network
 
-// Declare variables
 double analogValue = 0.0;
 double analogVolts = 0.0;
 unsigned long timeHolder = 0;
 
-WiFiClient client; // Starts the wifi client
+WiFiClient client; 
+
+int greenLED = 13; //D7
+int blueLED = 12; // D6
 
 void connectwifi() { // Function that handles connection to WiFi
   
@@ -34,18 +36,26 @@ if (WiFi.status() == WL_CONNECTED) {
 }
   
 void setup() {
+  // put your setup code here, to run once:
 
   Serial.begin(115200);
   delay(10);
   connectwifi(); 
-  delay(1000); 
+  delay(1000);
+   
+  pinMode(blueLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+  digitalWrite(blueLED, LOW);
+  digitalWrite(greenLED, LOW);
+  
+  delay(1000);
 }
 
 void ifttt() // Handles the API functionality through IFTTT
 {
   const char host[ ]        = "maker.ifttt.com";          // maker channel of IFTTT
   const char trigger[ ]     = "Water_Needed";                   // Trigger event name
-  const char APIKey[ ]      = "apikey";      // IFTTT API Key
+  const char APIKey[ ]      = "";      // IFTTT API Key
   Serial.print("Connect to: ");
   Serial.println(host);
   // WiFiClient to make HTTP connection
@@ -74,28 +84,36 @@ void ifttt() // Handles the API functionality through IFTTT
   Serial.println(); 
   Serial.println();
   client.stop();  
-  delay (10000); // Stops email spam 
+  delay (20000); // Stops email spam
  }
 
 void loop() {
   
   analogValue = analogRead(A0); // read the analog signal
   
-  // Converts the signal into a more readable value
   analogVolts = (analogValue * 3.08) / 1024;
   int chartValue = (analogValue * 100) / 400;
   chartValue = 100 - chartValue;
   
   Serial.print(chartValue);
-  delay(60000); // Checks moisture levels consistently | Once a minute 
+  delay(10000); // Checks moisture levels consistently
 
-  if (chartValue >-15) { // If soil is dry enough send a web request via ifttt api
+  if (chartValue >-15) { // If moisture is too low
 
-    Serial.print("Plants need water! "); 
-    ifttt(); 
-
+    Serial.println();
+    Serial.print("Plants need water! ");
+    digitalWrite(greenLED, LOW);
+    digitalWrite(blueLED, HIGH);
+    ifttt(); // Sends email    
+  }
+  else { // If moisture is all good 
+    Serial.println();
+    Serial.print("Water is not needed. ");
+    digitalWrite(blueLED, LOW);
+    digitalWrite(greenLED, HIGH);
     
   }
+  
   
   
 }
